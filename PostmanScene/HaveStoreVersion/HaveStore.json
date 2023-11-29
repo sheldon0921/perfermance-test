@@ -1,0 +1,1210 @@
+{
+	"info": {
+		"_postman_id": "fb3d4ab7-2f5c-427a-a3c9-4a9e63fc8915",
+		"name": "Console",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ConsoleLogin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//发了一个post请求",
+							"",
+							"// const loginRequest = {",
+							"//     url:'https://crs-api.vchangyi.com/gw-scrm/login',",
+							"//     method: 'POST',",
+							"//     header: 'Content-Type: application/json',",
+							"//     body:{",
+							"//         mode: 'raw',",
+							"//         raw:JSON.stringify({",
+							"//             account: 'yangqiao@vchangyi.com',",
+							"//             password: '445ac28dcfb325e80dc7fe91573632d1'",
+							"//         })",
+							"//     }",
+							"// };",
+							"// pm.sendRequest(loginRequest, function(err, response){",
+							"//     pm.environment.set(\"token\",response.json().data.token)",
+							"//     pm.environment.set(\"hash\",response.json().data.hash)",
+							"// })",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"pm.environment.set(\"token\", responseJson.data.token)",
+							"pm.environment.set(\"hash\", responseJson.data.hash)",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"bgDomain\", \"crs-api.vchangyi.com\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login_type\": 1,\n    \"account\": \"yangqiao@vchangyi.com\",\n    \"password\": \"445ac28dcfb325e80dc7fe91573632d1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/login",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"admin_id\": 135661741266944\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/get-token",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"get-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "changeEnterpriseList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "enterprise-hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/change-enterprise-list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"change-enterprise-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "购买通知",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/buy/notice",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"buy",
+						"notice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "基本配置",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/base/config",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"base",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "企微好友统计",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"day\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/qw/friend",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"qw",
+						"friend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "shoppersList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)",
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"day\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/shoppers/list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"shoppers",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "shopFee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"day\": 0,\n    \"store_id\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/shop/fee",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"shop",
+						"fee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "shopConversion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/shop/conversion",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"shop",
+						"conversion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "StoreList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/store/list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"store",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ConsoleIndex",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-console/v1/goods/stock-warning/console-index",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-console",
+						"v1",
+						"goods",
+						"stock-warning",
+						"console-index"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IndexHelp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/index/help",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"index",
+						"help"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "部门列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pid\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/departments/list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"departments",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "员工列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"department_id\": 0,\n    \"page\": 1,\n    \"size\": 999\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/members/list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"members",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "重复客户列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"search\": {\n        \"customer_name\": \"\"\n    },\n    \"page\": 1,\n    \"size\": 999\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/customer/repeat-customer",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"customer",
+						"repeat-customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "流失客户列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": 1,\n    \"customer_name\": \"\",\n    \"department_id\": 0,\n    \"member_id\": 0,\n    \"time_slot_type\": null,\n    \"time_start\": null,\n    \"time_end\": null,\n    \"page\": 1,\n    \"size\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/customer/loss-customers-list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"customer",
+						"loss-customers-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Moment-list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"is_top\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/departments/moment-list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"departments",
+						"moment-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mementList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"page\": 1,\n    \"size\": 9999,\n    \"get_no_dp\": 1,\n    \"search\": {\n        \"mem_username\": \"\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/members/momentList",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"members",
+						"momentList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "moment-list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"third_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/departments/moment-list",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"departments",
+						"moment-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "momentList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"page\": 1,\n    \"size\": 500,\n    \"search\": {\n        \"dp_id\": 135663664535232\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/members/momentList",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"members",
+						"momentList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update-message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var url=pm.request.url.toString()",
+							"pm.test(url+\"的Statuscode 是 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var requestJson= pm.request.body",
+							"var responseJson= pm.response.json()",
+							"console.log(\"请求参数：\", requestJson)",
+							"console.log(\"request_id\", responseJson.request_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "hash",
+						"value": "{{hash}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"send_type\": 2,\n    \"id\": 0,\n    \"status\": 1,\n    \"stat_txt\": \"{'member':[{'name':'韩志刚','user_id':'HanZhiGang'}]}\",\n    \"qy_stat_txt\": \"{'member':['HanZhiGang']}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{bgDomain}}/gw-scrm/customer/update-message",
+					"protocol": "https",
+					"host": [
+						"{{bgDomain}}"
+					],
+					"path": [
+						"gw-scrm",
+						"customer",
+						"update-message"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

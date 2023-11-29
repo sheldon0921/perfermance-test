@@ -1,0 +1,462 @@
+{
+  "info": {
+    "_postman_id": "2a11c344-d4e6-49e2-a4b1-49b6d76d80cb",
+    "name": "work",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "worker",
+      "item": [
+        {
+          "name": "获取accessToken",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Body matches string\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"expires_in\");",
+                  "});",
+                  "pm.test(\"errmsg is ok\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errmsg).to.eql(\"ok\");",
+                  "});",
+                  "pm.test(\"expires_in is 7200\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.expires_in).to.eql(7201);",
+                  "});",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "//清除环境变量",
+                  "// pm.environment.unset(\"accessToken\");",
+                  "//清除全局变量",
+                  "// pm.globals.unset(\"accessToken\")",
+                  "// pm.globals.set(\"access_token\", response.jsonData().access_token)",
+                  "",
+                  "// pm.globals.unset(\"variable_key\"); 清除全局变量",
+                  "// pm.environment.unset(\"variable_key\");  清除环境变量",
+                  "// pm.globals.get(\"variable_key\");      获取全局变量",
+                  "// pm.variables.get(\"variable_key\");    获取一个变量",
+                  "// pm.environment.get(\"variable_key\");      获取环境变量",
+                  "// pm.sendRequest(\"https://postman-echo.com/get\", function (err, response) {",
+                  "//     console.log(response.json());",
+                  "// });  发送一个请求",
+                  "// pm.globals.set(\"variable_key\", \"variable_value\");  设置环境变量",
+                  "",
+                  "pm.sendRequest(\"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wwcd851624880f6f5b&corpsecret=UqnAYQUnf81LNVMDZDwhm1ehj3QP0wq_V9eXlGSvhrY\", function(err, response){",
+                  "    pm.environment.set(\"accessToken\",response.json().access_token)",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wwcd851624880f6f5b&corpsecret=UqnAYQUnf81LNVMDZDwhm1ehj3QP0wq_V9eXlGSvhrY",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "gettoken"
+              ],
+              "query": [
+                {
+                  "key": "corpid",
+                  "value": "wwcd851624880f6f5b"
+                },
+                {
+                  "key": "corpsecret",
+                  "value": "UqnAYQUnf81LNVMDZDwhm1ehj3QP0wq_V9eXlGSvhrY"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取部门列表 ",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token={{accessToken}}",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "department",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "id",
+                  "value": "7",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取部门成员",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/simplelist?access_token={{accessToken}}&department_id=1&fetch_child=1",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "simplelist"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "department_id",
+                  "value": "1"
+                },
+                {
+                  "key": "fetch_child",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "读取成员",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"response errcode is 0\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.errcode).to.eql(0);",
+                  "});",
+                  "pm.test(\"userid is yujia\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.userid).to.eql(\"yujia\");",
+                  "});",
+                  "pm.test(\"username is 程雨佳\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.name).to.eql(\"程雨佳\");",
+                  "});",
+                  "pm.test(\"user mobile is 13720729767\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.mobile).to.eql(\"13720729767\");",
+                  "});",
+                  "pm.test(\"user sex is 1\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.gender).to.eql(\"1\");",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.sendRequest(\"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wwcd851624880f6f5b&corpsecret=UqnAYQUnf81LNVMDZDwhm1ehj3QP0wq_V9eXlGSvhrY\", function(err, response){",
+                  "    pm.environment.set(\"accessToken\",response.json().access_token)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token={{accessToken}}&userid=yujia",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "userid",
+                  "value": "yujia"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取部门成员详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/list?access_token={{accessToken}}&department_id=1&fetch_child=1",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}",
+                  "description": "调用接口凭证"
+                },
+                {
+                  "key": "department_id",
+                  "value": "1",
+                  "description": "获取的部门id"
+                },
+                {
+                  "key": "fetch_child",
+                  "value": "1",
+                  "description": "1/0：是否递归获取子部门下面的成员"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "userid与openid互换",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n   \"userid\": \"hanzhigang\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/convert_to_openid?access_token={{accessToken}}",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "convert_to_openid"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "二次验证",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/authsucc?access_token={{accessToken}}&userid=hanzhigang",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "authsucc"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "userid",
+                  "value": "hanzhigang"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取加入企业二维码",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/corp/get_join_qrcode?access_token={{accessToken}}&size_type=4",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "corp",
+                "get_join_qrcode"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                },
+                {
+                  "key": "size_type",
+                  "value": "4",
+                  "description": "qrcode尺寸类型，1: 171 x 171; 2: 399 x 399; 3: 741 x 741; 4: 2052 x 2052"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取企业活跃成员数",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"date\": \"2021-03-09\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://qyapi.weixin.qq.com/cgi-bin/user/get_active_stat?access_token={{accessToken}}",
+              "protocol": "https",
+              "host": [
+                "qyapi",
+                "weixin",
+                "qq",
+                "com"
+              ],
+              "path": [
+                "cgi-bin",
+                "user",
+                "get_active_stat"
+              ],
+              "query": [
+                {
+                  "key": "access_token",
+                  "value": "{{accessToken}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

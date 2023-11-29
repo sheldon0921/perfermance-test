@@ -1,0 +1,3 @@
+2023-11-24 09:08:45 - filelock.py -filelock - filelock - acquire - 274 - INFO - Lock 4538636944 acquired on session.lock
+2023-11-24 09:08:45 - readerFile.py -root - readerFile - readerJson - 18 - INFO - params json file: /Users/wanggenggeng/Documents/code/auto_test/data/onLineEnterpriseInfo(supermarket).json
+2023-11-24 09:08:46 - filelock.py -filelock - filelock - release - 318 - INFO - Lock 4538636944 released on session.lock

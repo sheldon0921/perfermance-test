@@ -1,0 +1,16 @@
+{
+    "id":0,
+    "province":"北京市",
+    "city":"北京市",
+    "area":"东城区",
+    "address":"高新路西部国际广场",
+    "provinceCode":"110000",
+    "cityCode":"110100",
+    "areaCode":"110101",
+    "source":"2",
+    "default":"1",
+    "zip_code":"",
+    "delivery_name":"白喆",
+    "delivery_mobile":"17319905367",
+    "is_auth_address":"2"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "忽略",
+    "matchedStatuses": ["skipped"]
+  },
+  {
+    "name": "失败",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*AssertionError.*"
+  },
+  {
+    "name": "用例错误(文件缺失)",
+    "matchedStatuses": ["broken"],
+    "traceRegex": ".*FileNotFoundException.*"
+  },
+  {
+    "name": "用例错误",
+    "matchedStatuses": ["broken"],
+    "traceRegex": ".*AttributeError.*"
+  },
+  {
+    "name": "用例错误(接口返回异常)",
+    "matchedStatuses": ["failed"],
+    "traceRegex": ".*Exception.*"
+  }
+]

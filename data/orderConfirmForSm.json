@@ -1,0 +1,18 @@
+{
+      "goods_data": [{
+          "sku_id": 0,
+          "number": 1,
+          "cart_id": 0,
+          "activity_type": 1,
+          "delivery_type": 2,
+          "extract_id": 152426861964864,
+          "extract_longitude": "",
+          "extract_latitude": "",
+          "extract_bs_hours": "",
+          "extract_address": "",
+          "extract_is_nearest": 0
+      }],
+      "user_address_id": 1,
+      "user_latitude": "34.341270",
+      "user_longitude": "108.939840"
+}
