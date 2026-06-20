@@ -1,0 +1,14 @@
+node_modules/
+venv/
+.DS_Store
+.idea/
+jmeter.log
+report/result/
+report/report/
+report/newman/
+report/jenkins/
+report/allure-results/
+report/allure-report/
+report/*.jtl
+npm-debug.log*
+.env

@@ -1,296 +1,230 @@
-#  												接口自动化解决方案V1.0
+# 接口与性能测试工程
 
-## 一、目的
+这个项目用于维护两类自动化测试资产：
 
-​		随着业务扩张，普通的手工测试已经无法满足现阶段的需求。市场上接口自动化测试框架层出不群，但是普遍对测试人员的技能要求较高。为了提高测试覆盖率，进而提升测试质量，提高系统可用性。因此我们将python+requests+pytest和postman+Newman两套方案整理到一个工程里面；对于有一定编码能力的自动化测试组人员（Auto Tester）使用python+requests+pytest对比较复杂的场景进行覆盖；针对于没有编码基础或者编码基础比较薄弱的功能测试人员（TE）则使用postman+Newman对简单场景进行接口层面的覆盖。️
+1. Postman Collection，通过 Newman 执行接口测试，并在 Jenkins 中展示 Allure Report。
+2. JMeter JMX 脚本，通过 JMeter 非 GUI 模式执行性能测试，并在 Jenkins 中展示 JMeter 原生 HTML Dashboard。
 
-## 二、目录结构
+当前项目不再维护历史 Python/pytest 接口自动化代码。
 
+## 目录结构
+
+```text
+.
+├── PostmanScene/                 # Postman 导出的 collection
+│   ├── BaiduDemo/
+│   ├── CommunityGroupBuying/
+│   ├── DirectStoreVersion/
+│   ├── HaveStoreVersion/
+│   └── NoStoreVersion/
+├── script/
+│   └── simulate/                 # JMeter 压测脚本
+├── utils/
+│   ├── CollectionApi.sh          # 执行 Newman collection，输出 JUnit XML
+│   ├── runJmeter.sh              # 执行 JMeter，并直接生成 HTML Dashboard
+│   ├── generateJmeterReport.sh   # 基于已有 JTL 重新生成 JMeter Dashboard
+│   ├── generateAllureResults.sh  # 将 Newman/JMeter 结果转换为 Allure results
+│   └── generateAllureReport.sh   # 生成 Allure HTML 报告
+├── JenkinsfileForLocal           # 本地 Jenkins 推荐流水线
+├── JenkinsfileForNewman          # 仅 Newman 的简化流水线
+├── Jenkinsfile                   # JMeter 分布式压测流水线
+├── package.json
+└── README.md
 ```
-postmanapi
-├────	PostmanScene					 postman导出的json脚本			
-│	└─── CommunityGroupBuying	                 社区团购版
-│	│		└─── CommunityGroupBuying.json   社区团购版json脚本
-│	└─── DirectStoreVersion			         直营连锁版
-│       │ 		└── DirectStore.json             直营连锁版json脚本
-│	└─── HaveStoreVersion			         中心商城有门店版
-│       │		└── HaveStore.json	         中心商城有门店版json脚本
-│	└─── NoStoreVersion			         中心商城无门的版
-│    			└── Nostore.json		 中心商城无门的版json脚本
-├──── config
-│	└───environment.ini                              环境配置信息
-├──── data					         测试数据
-├──── img				                 README图片数据
-├──── log						 格式化日志输出及日志级别
-├──── report						 测试报告
-├──── tests					         Auto Tester提交的pytest用例
-├──── utils						 工具
-│	└───myJson.py		                         json数据处理
-│	└───myTime.py				         自定义时间戳/格式化输出时间
-│	└───readerFile.py			         文件读取
-│	└───readerIniFile.py			         读取配置文件
-├──── JenkinsFile				         工程构建脚本
-├──── mian.py					         pytest用例执行入口文件
-├──── CollectionApi.sh			                 postman json用例收集
-├──── package.json
-├──── package-lock.json
-├──── Pipfile					         python环境配置
-├──── pytest.ini					 pytest配置
-├──── requirements.txt				         pytest依赖库
-├──── README						 介绍文档
-```
-## 三、python3+pytest使用
-### 3.1开发环境搭建
 
-#### 3.1.1依赖
-* python 3.5+
-* pipenv
-1. python 安装
-2. pipenv 安装
+## 环境准备
+
+本地需要：
+
 ```bash
-pip install pipenv
+brew install jmeter
+npm install
 ```
-3. 初始化工作环境
+
+如果要使用本地 Jenkins：
+
 ```bash
-pipenv install
-```
-### 3.2测试用例编写规范
-
-1. 测试用例必须放在 `tests` 目录或其子目录下
-2. 测试文件名称必须以 `_test.py` 结尾
-3. 测试用例必须以 `Test` 结尾
-4. 测试方法必须以 `test_` 开始
-
-**Example**: demo_test.py
-
-```python
-from tests.helper import ShopTest
-
-class DemoTest(ShopTest):
-
-    def test_demo1(self):
-        self.assertTrue(1=1, 'test_demo1')
-        
-    def test_demo2(self):
-        self.assertTrue(1=1, 'test_demo2')
+brew install jenkins-lts
+brew services start jenkins-lts
 ```
 
-### 3.3开发执行
+Jenkins 默认地址：
+
+```text
+http://localhost:8080
+```
+
+首次解锁密码通常在：
+
 ```bash
-pipenv run pytest 
-# or 生产报告
-pipenv run pytest --junit-xml=report/results.xml --html=report/results.html --self-contained-html
+cat ~/.jenkins/secrets/initialAdminPassword
 ```
 
-或执行 `main.py`
+## 本地执行 Postman/Newman
 
-### 3.4 DDT 使用规范
+执行全部 collection：
 
-1. 不允许一个测试用例里面存在针对多个接口的测试（不易于问题排查和多人合作）
-2. 数据中不允许包含业务逻辑，可以包含：输入参数、断言参数、配置参数
-3. 支持 ddt 测试方法的参数必须是命名参数
-4. ddt 测试需要使用 @unpack 注解
-5. 传入 ddt 测试的数据必须是数组
-6. 每个 testcase 一个数据文件
-
-**Example**: `yaml`
-
-`tests/data/demo.yaml`：
-```yaml
-data_set1:
-  -
-    a: 1
-    b: 2
-    expected: 3
-  -
-    a: 3
-    b: 3
-    expected: 6
-
-data_set2:
-  -
-    sub1: 6
-    sub2: 4
-    expected: 2
-  -
-    sub1: 4
-    sub2: 1
-    expected: 3
-```
-```python
-from ddt import ddt, unpack, data
-
-from atr.reader import read_yaml
-from atr.testcase import BaseTest
-
-yaml_demo_data = read_yaml('tests/data/demo.yaml')
-
-
-@ddt
-class YamlReaderTest(BaseTest):
-
-    @data(*yaml_demo_data['data_set1'])
-    @unpack
-    def test_add(self, a, b, expected):
-        act = a + b
-        self.assertEqual(act, expected)
-
-    @data(*yaml_demo_data['data_set2'])
-    @unpack
-    def test_sub(self, sub1, sub2, expected):
-        act = sub1 - sub2
-        self.assertEqual(act, expected)
-
-```
-**Example**: `json`
-`tests/data/demo.json` ：
-```json
-{
-  "data_set1": [
-    {
-      "a": 1,
-      "b": 2,
-      "expected": 3
-    },
-    {
-      "a": 3,
-      "b": 3,
-      "expected": 6
-    }
-  ],
-  "data_set2": [
-    {
-      "sub1": 6,
-      "sub2": 4,
-      "expected": 2
-    },
-    {
-      "sub1": 4,
-      "sub2": 1,
-      "expected": 3
-    }
-  ]
-}
-```
-```python
-from ddt import ddt, unpack, data
-
-from atr.reader import read_json
-from atr.testcase import BaseTest
-
-json_demo_data = read_json('tests/data/demo.json')
-
-@ddt
-class JsonReaderTest(BaseTest):
-    @data(*json_demo_data['data_set1'])
-    @unpack
-    def test_add(self, a, b, expected):
-        act = a + b
-        self.assertEqual(act, expected)
-
-    @data(*json_demo_data['data_set2'])
-    @unpack
-    def test_sub(self, sub1, sub2, expected):
-        act = sub1 - sub2
-        self.assertEqual(act, expected)
-
-```
-## 四、Postman + newman
-### 4.1 开发环境搭建
-    1、安装nodejs（Node.js >= v10）;
-    2、克隆项目至本地：git clone ssh://git@gitlab-ce.k8s.tools.vchangyi.com:32201/tester/api-automated-testing.git
-    3、cd 至项目根目录执行 npm install 安装依赖
-    4、安装postman
-### 4.2、用到的技术
-
-​	1、Postman使用
-
-​	2、Newman（TE可以不用了解）
-
-​	3、Jenkins（TE可以不用了解）
-
-​	4、js基本语法（TE可以不用了解，稍作学习可做断言即可）
-
-### 4.3、实施流程
-
-![image-20210310190524864](data/img/image-20210310190524864.png)
-
-### 4.4、具体实施步骤
-
-#### 4.4.1、postman接口录入
-
-![image-20210310190846526](data/img/image-20210310190846526.png)
-
-#### 4.4.2、变量参数化定义
-
-![image-20210310190954783](data/img/image-20210310190954783.png)
-
-![image-20210310191026632](data/img/image-20210310191026632.png)
-
-![image-20210310191329688](data/img/image-20210310191329688.png)
-
-#### 4.4.3、变量使用
-
-![image-20210310191139041](data/img/image-20210310191139041.png)
-
-![image-20210310191218586](data/img/image-20210310191218586.png)
-
-![image-20210310191420779](data/img/image-20210310191420779.png)
-
-#### 4.4.4、用例添加断言
-
-​		postman有丰富的断言库，可直接点击左侧断言类型快速生成断言的js脚本，稍作修改便可生成一个断言！
-
-![image-20210310192120924](data/img/image-20210310192120924.png)
-
-![image-20210310191846033](data/img/image-20210310191846033.png)
-
-### 4.4.5、脚本导出
-
-![image-20210310192319146](data/img/image-20210310192319146.png)
-
-![image-20210310192344557](data/img/image-20210310192344557.png)
-
-## 4.5、Jenkins构建
-
-![image-20210310192708424](data/img/image-20210310192708424.png)
-
-#### ![image-20210310194033912](data/img/image-20210310194033912.png)	
-
-### 4.5.1 构建脚本
-
-​					<!--这个构建脚本主要实现了工作目录下json格式的用例的收集/执行功能-->
-
-```sh
-#！/usr/bin/bash
-echo "配置npm环境变量："
-source /etc/profile
-echo "newman版本："
-newman -version
-echo "执行测试用例："
-function buildFunction(){
-for file in ` ls $1`
-do
-    if [[ -d $1"/"${file} ]]
-    then
-    buildFunction $1"/"${file}
-    else
-        local path=$1"/"${file}
-        local name=${file}
-        if [[ ${name} == *json ]]
-        then
-            newman run ${path}
-        fi
-    fi
-done
-}
-INIT_PATH="api/"
-buildFunction ${INIT_PATH}
+```bash
+npm run postman
 ```
 
-#### 4.5.2 构建日志
-#### ![image-20210310193047380](data/img/image-20210310193047380.png)
-----------------------------------------------------------当有断言失败时整个构建就会失败--------------------------------------------------
+执行指定 collection 目录：
 
-**OVER**
+```bash
+npm run postman:have-store
+npm run postman:direct-store
+npm run postman:no-store
+npm run postman:community
+npm run postman:baidu
+```
 
+也可以直接传文件或目录：
+
+```bash
+bash utils/CollectionApi.sh PostmanScene/BaiduDemo/BaiduHome.json
+bash utils/CollectionApi.sh PostmanScene/HaveStoreVersion
+```
+
+输出：
+
+- `report/result/*.xml`：Newman JUnit XML，供 Jenkins JUnit 和 Allure 转换使用。
+
+生成 Allure 报告：
+
+```bash
+npm run allure:report
+```
+
+输出：
+
+- `report/allure-results/`
+- `report/allure-report/index.html`
+
+## 本地执行 JMeter
+
+当前示例脚本：
+
+```text
+script/simulate/baidu_home.jmx
+```
+
+执行默认 JMeter 脚本：
+
+```bash
+npm run jmeter
+```
+
+执行指定 JMX：
+
+```bash
+bash utils/runJmeter.sh script/simulate/baidu_home.jmx
+```
+
+覆盖线程数、RampUp、持续时间：
+
+```bash
+env ThreadsCount=50 RampUp=10 time=120 npm run jmeter
+```
+
+输出：
+
+- `report/jtlResult.jtl`：JMeter 原始结果。
+- `report/report/index.html`：JMeter 原生 HTML Dashboard。
+
+只基于已有 JTL 重新生成 Dashboard：
+
+```bash
+npm run jmeter:report
+```
+
+JMeter Dashboard 包含左侧导航栏、聚合统计、TPS/Throughput、响应时间、错误率、分位数、Over Time 等图表，是性能测试的主要报告入口。
+
+## Jenkins 本地流水线
+
+本地 Jenkins 推荐使用 `JenkinsfileForLocal`。它支持一个任务里通过参数选择接口测试或性能测试。
+
+创建任务：
+
+1. Jenkins 首页选择 `New Item`。
+2. 输入任务名，例如 `perfermance-test-local`。
+3. 类型选择 `Pipeline`。
+4. `Pipeline` 可选择 `Pipeline script from SCM`，仓库指向本项目。
+5. `Script Path` 填 `JenkinsfileForLocal`。
+
+如果只是本机调试，也可以选择 `Pipeline script`，直接粘贴 `JenkinsfileForLocal` 内容。
+
+### Jenkins 参数
+
+| 参数 | 用途 | 默认值 |
+| --- | --- | --- |
+| `TEST_TYPE` | 选择执行 `postman` 或 `jmeter` | `postman` |
+| `COLLECTION_PATH` | Postman collection 文件或目录，`TEST_TYPE=postman` 生效 | `PostmanScene/BaiduDemo/BaiduHome.json` |
+| `CASE_FILE` | JMeter JMX 文件，`TEST_TYPE=jmeter` 生效 | `script/simulate/baidu_home.jmx` |
+| `ThreadsCount` | JMeter 线程数 | `10` |
+| `RampUp` | JMeter RampUp 秒数 | `10` |
+| `time` | JMeter 持续时间，单位秒 | `60` |
+
+### Jenkins 报告入口
+
+Postman/Newman 构建：
+
+- `Allure Report`：接口测试主报告。
+- Jenkins JUnit 趋势：基于 `report/result/*.xml`。
+
+JMeter 构建：
+
+- `JMeter Dashboard`：性能测试主报告，包含聚合报告、TPS、响应时间、错误率和图表。
+- `Allure Report`：会保留基础结果视角，但性能分析以 JMeter Dashboard 为准。
+
+已移除的入口：
+
+- `Test Report`：之前的轻量汇总页，已不再发布，避免和 Allure/JMeter Dashboard 重复。
+
+### Jenkins HTML 报告 CSP
+
+Allure 和 JMeter Dashboard 都是带 CSS/JavaScript 的 HTML 报告。Jenkins 默认 CSP 可能阻止报告正常渲染。
+
+本地 Jenkins 已通过以下初始化脚本放宽 HTML 报告 CSP：
+
+```text
+~/.jenkins/init.groovy.d/local-html-report-csp.groovy
+```
+
+如果换一台机器部署 Jenkins，需要同步该配置，或在 Jenkins 启动参数中设置 `hudson.model.DirectoryBrowserSupport.CSP`。
+
+## 其他 Jenkinsfile
+
+`JenkinsfileForNewman`：
+
+- 只执行 Newman。
+- 适合只需要 collection JUnit 报告的简化任务。
+
+`Jenkinsfile`：
+
+- 面向 JMeter 性能测试。
+- 支持 `Exec_Server` 参数，用于 JMeter 分布式执行机。
+- 会归档 `report/jtlResult.jtl` 和 `report/report/**`。
+
+## 生成文件与清理
+
+以下目录/文件是构建产物，已加入 `.gitignore`：
+
+- `node_modules/`
+- `report/result/`
+- `report/report/`
+- `report/newman/`
+- `report/jenkins/`
+- `report/allure-results/`
+- `report/allure-report/`
+- `report/*.jtl`
+- `jmeter.log`
+
+`JenkinsfileForLocal` 每次构建开始会清理旧报告，避免 Postman 和 JMeter 构建结果互相混入。
+
+## 维护约定
+
+- 新增接口测试时，优先在 Postman 中维护 collection，再导出到 `PostmanScene/`。
+- 新增性能测试时，把 `.jmx` 放到 `script/simulate/` 或后续约定的生产脚本目录。
+- JMeter 脚本里的线程数、RampUp、持续时间建议使用属性变量，方便 Jenkins 通过 `ThreadsCount`、`RampUp`、`time` 覆盖。
+- 接口测试失败优先看 `Allure Report` 和 Jenkins JUnit 趋势。
+- 性能测试分析优先看 `JMeter Dashboard`，不要用 Allure 判断 TPS/响应时间趋势。

@@ -1,44 +1,25 @@
 {
   "name": "api-automated-testing",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "private": true,
   "license": "ISC",
-  "description": "postman newman pytest project",
-  "repository": {
-    "url": "ssh://git@gitlab-ce.k8s.tools.vchangyi.com:32201/tester/api-automated-testing.git"
-  },
+  "description": "Postman Newman collections and JMeter performance pipeline",
   "scripts": {
-    "allure": "allure",
-    "gen-html": "allure generate report/result -o report/html --clean",
-    "viewer": "allure open report/html -h localhost",
-    "test": "mocha test/ --R mochawesome -t 3000",
-    "test-tdd": "mocha -u tdd config/nodeTest/tddTest.js --R mochawesome",
-    "test_help": "mocha -help"
+    "postman": "bash utils/CollectionApi.sh",
+    "postman:have-store": "bash utils/CollectionApi.sh PostmanScene/HaveStoreVersion",
+    "postman:direct-store": "bash utils/CollectionApi.sh PostmanScene/DirectStoreVersion",
+    "postman:no-store": "bash utils/CollectionApi.sh PostmanScene/NoStoreVersion",
+    "postman:community": "bash utils/CollectionApi.sh PostmanScene/CommunityGroupBuying",
+    "postman:baidu": "bash utils/CollectionApi.sh PostmanScene/BaiduDemo/BaiduHome.json",
+    "jmeter": "bash utils/runJmeter.sh",
+    "jmeter:report": "bash utils/generateJmeterReport.sh",
+    "allure:results": "bash utils/generateAllureResults.sh",
+    "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh"
   },
   "dependencies": {
-    "@influxdata/influxdb-client": "^1.14.0",
-    "allure-commandline": "^2.13.8",
-    "influx": "^5.9.2",
-    "mocha": "^9.0.1",
-    "mochawesome": "^6.2.2",
-    "newman": "^5.2.2",
-    "supertest": "^6.1.3"
+    "newman": "^5.2.2"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "chai": "^4.3.4",
-    "co-request": "^1.0.0",
-    "http-proxy-middleware": "^2.0.0",
-    "k6-html-reporter": "^1.0.4",
-    "k6-to-junit": "^1.0.3",
-    "har-to-k6": "^0.9.0",
-    "k6": "^0.0.0",
-    "k6-from-postman": "^0.0.17",
-    "k6-web-recorder": "^0.1.0",
-    "postman-to-k6": "^1.5.0",
-    "jmeter-to-k6": "^1.0.0",
-    "koa": "^2.13.1",
-    "koa2-connect": "^1.0.2",
-    "meeko": "^1.8.163"
+    "allure-commandline": "^2.42.1"
   }
 }

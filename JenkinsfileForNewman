@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '25'))
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    parameters {
+        string(
+            name: 'COLLECTION_PATH',
+            defaultValue: 'PostmanScene',
+            description: 'Postman collection file or directory'
+        )
+    }
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Run Newman') {
+            steps {
+                sh 'rm -rf report/result && mkdir -p report/result'
+                sh 'bash utils/CollectionApi.sh "${COLLECTION_PATH}"'
+            }
+        }
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: 'report/result/*.xml'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml'
+        }
+    }
+}

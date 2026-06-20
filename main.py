@@ -1,38 +1,24 @@
-#!/usr/local/bin/python3
-# -*- coding:UTF-8 -*-
-"""
-@FileName           :main.py
-@Copyright          :Copyright ©2014-2021 创业翼
-@Author             :GourdBoy
-@Date               :2023/11/15
-"""
-import pytest
+import os
+from google import genai
 
-# import schedule
-# import datetime
-# import time
-# import os
-# import sys
+# 1. 验证环境变量是否生效，如果打印出 None，说明你前面 Edit Configurations 没配成功
+print("检查 API KEY 是否存在:", "存在" if os.environ.get("GEMINI_API_KEY") else "不存在 (None)")
 
+try:
+    # 2. 初始化客户端
+    client = genai.Client()
 
-# def job():
-#     print("执行时间：{0}".format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-#     pytest.main()
+    print("正在请求 Gemini API，请稍候...")
 
+    # 3. 调用最新的 Gemini 3.5 Flash 模型
+    response = client.models.generate_content(
+        model='gemini-3.5-flash',
+        contents='用 Python 写一个预测双色球中奖号码的脚本',
+    )
 
-if __name__ == '__main__':
-    pytest.main()
+    # 4. 打印返回结果
+    print("\n--- Gemini 回复内容 ---")
+    print(response.text)
 
-    # path = os.path.dirname(os.path.dirname(os.path.abspath('__file__')))
-    # if path not in sys.path:
-    #     sys.path.append(path)
-    # # schedule.every(5).to(10).days.do(job)
-    # # schedule.every().monday.do(job)
-    # # schedule.every().wednesday.at("13:15").do(job)
-    # # schedule.every(10).minutes.do(job)
-    # # schedule.every().hour.do(job)
-    # schedule.every().day.at("16:17").do(job)
-    #
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+except Exception as e:
+    print(f"\n❌ 请求发生异常: {e}")

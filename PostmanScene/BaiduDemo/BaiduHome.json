@@ -1,0 +1,52 @@
+{
+  "info": {
+    "_postman_id": "5cc8e264-f960-4f4e-9d56-73c7f9b0d001",
+    "name": "Baidu Home Demo",
+    "description": "Demo collection for requesting Baidu home page.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Baidu Home",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"response body is not empty\", function () {",
+              "    pm.expect(pm.response.text()).to.not.be.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 Newman Demo"
+          }
+        ],
+        "url": {
+          "raw": "https://www.baidu.com/",
+          "protocol": "https",
+          "host": [
+            "www",
+            "baidu",
+            "com"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

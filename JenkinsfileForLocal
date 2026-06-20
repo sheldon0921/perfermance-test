@@ -1,0 +1,90 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '25'))
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    parameters {
+        choice(
+            name: 'TEST_TYPE',
+            choices: ['postman', 'jmeter'],
+            description: '选择执行 Newman 接口测试或 JMeter 性能测试'
+        )
+        string(
+            name: 'COLLECTION_PATH',
+            defaultValue: 'PostmanScene/BaiduDemo/BaiduHome.json',
+            description: 'Postman collection 文件或目录；TEST_TYPE=postman 时生效'
+        )
+        string(
+            name: 'CASE_FILE',
+            defaultValue: 'script/simulate/baidu_home.jmx',
+            description: 'JMeter jmx 脚本路径；TEST_TYPE=jmeter 时生效'
+        )
+        string(name: 'ThreadsCount', defaultValue: '10', description: 'JMeter 线程数')
+        string(name: 'RampUp', defaultValue: '10', description: 'JMeter RampUp 秒数')
+        string(name: 'time', defaultValue: '60', description: 'JMeter 持续时间，单位秒')
+    }
+    stages {
+        stage('Prepare Reports') {
+            steps {
+                sh 'rm -rf report/result report/newman report/report report/allure-results report/allure-report report/jtlResult.jtl'
+            }
+        }
+        stage('Install Node Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Run Newman') {
+            when {
+                expression { params.TEST_TYPE == 'postman' }
+            }
+            steps {
+                sh 'bash utils/CollectionApi.sh "${COLLECTION_PATH}"'
+            }
+        }
+        stage('Run JMeter') {
+            when {
+                expression { params.TEST_TYPE == 'jmeter' }
+            }
+            steps {
+                sh 'env ThreadsCount="${ThreadsCount}" RampUp="${RampUp}" time="${time}" bash utils/runJmeter.sh "${CASE_FILE}"'
+            }
+        }
+    }
+    post {
+        always {
+            sh 'TEST_TYPE="${TEST_TYPE}" bash utils/generateAllureResults.sh'
+            sh 'bash utils/generateAllureReport.sh'
+            script {
+                if (fileExists('report/result')) {
+                    junit allowEmptyResults: true, testResults: 'report/result/*.xml'
+                }
+            }
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jtlResult.jtl,report/report/**,report/allure-results/**,report/allure-report/**'
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/allure-report',
+                reportFiles: 'index.html',
+                reportName: 'Allure Report',
+                reportTitles: 'Allure Report'
+            ])
+            script {
+                if (fileExists('report/report/index.html')) {
+                    publishHTML([
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'report/report',
+                        reportFiles: 'index.html',
+                        reportName: 'JMeter Dashboard',
+                        reportTitles: 'JMeter Dashboard'
+                    ])
+                }
+            }
+        }
+    }
+}
