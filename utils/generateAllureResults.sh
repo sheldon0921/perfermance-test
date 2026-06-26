@@ -8,16 +8,22 @@ NEWMAN_XML_DIR="${RESULT_DIR:-report/result}"
 JMETER_JTL_FILE="${JTL_FILE:-report/jtlResult.jtl}"
 JMETER_STATS_FILE="${REPORT_DIR:-report/report}/statistics.json"
 TEST_TYPE="${TEST_TYPE:-unknown}"
+JMETER_ALLURE_SAMPLE_LIMIT="${JMETER_ALLURE_SAMPLE_LIMIT:-1000}"
 
 if [ -z "$ALLURE_RESULTS_DIR" ] || [ "$ALLURE_RESULTS_DIR" = "/" ] || [ "$ALLURE_RESULTS_DIR" = "." ]; then
   echo "Refusing to use unsafe Allure results directory: $ALLURE_RESULTS_DIR"
   exit 1
 fi
 
+if ! [[ "$JMETER_ALLURE_SAMPLE_LIMIT" =~ ^[0-9]+$ ]]; then
+  echo "JMETER_ALLURE_SAMPLE_LIMIT must be an integer >= 0, got: $JMETER_ALLURE_SAMPLE_LIMIT"
+  exit 1
+fi
+
 rm -rf "$ALLURE_RESULTS_DIR"
 mkdir -p "$ALLURE_RESULTS_DIR"
 
-ruby -Ku - "$ALLURE_RESULTS_DIR" "$NEWMAN_XML_DIR" "$JMETER_JTL_FILE" "$JMETER_STATS_FILE" "$TEST_TYPE" <<'RUBY'
+ruby -Ku - "$ALLURE_RESULTS_DIR" "$NEWMAN_XML_DIR" "$JMETER_JTL_FILE" "$JMETER_STATS_FILE" "$TEST_TYPE" "$JMETER_ALLURE_SAMPLE_LIMIT" <<'RUBY'
 # encoding: UTF-8
 require 'csv'
 require 'digest'
@@ -26,7 +32,10 @@ require 'rexml/document'
 require 'securerandom'
 require 'time'
 
-allure_dir, newman_xml_dir, jmeter_jtl_file, jmeter_stats_file, test_type = ARGV
+allure_dir, newman_xml_dir, jmeter_jtl_file, jmeter_stats_file, test_type, jmeter_sample_limit = ARGV
+jmeter_sample_limit = jmeter_sample_limit.to_i
+jmeter_total_rows = 0
+jmeter_written_rows = 0
 
 def now_ms
   (Time.now.to_f * 1000).to_i
@@ -98,8 +107,9 @@ if ['postman', 'unknown', 'local', ''].include?(test_type)
 end
 
 if ['jmeter', 'unknown', 'local', ''].include?(test_type) && File.exist?(jmeter_jtl_file)
-  rows = CSV.read(jmeter_jtl_file, headers: true)
-  rows.each_with_index do |row, index|
+  CSV.foreach(jmeter_jtl_file, headers: true).with_index do |row, index|
+    jmeter_total_rows += 1
+    break if jmeter_sample_limit.positive? && jmeter_written_rows >= jmeter_sample_limit
     label = row['label'].to_s.empty? ? "sample-#{index + 1}" : row['label'].to_s
     success = row['success'].to_s.downcase == 'true'
     started = row['timeStamp'].to_i
@@ -134,6 +144,7 @@ if ['jmeter', 'unknown', 'local', ''].include?(test_type) && File.exist?(jmeter_
       ]
     }
     write_result(allure_dir, result)
+    jmeter_written_rows += 1
   end
 end
 
@@ -141,7 +152,10 @@ environment = {
   'TEST_TYPE' => test_type,
   'Generated At' => Time.now.strftime('%Y-%m-%d %H:%M:%S'),
   'Newman Results' => File.exist?(newman_xml_dir) ? newman_xml_dir : '',
-  'JMeter JTL' => File.exist?(jmeter_jtl_file) ? jmeter_jtl_file : ''
+  'JMeter JTL' => File.exist?(jmeter_jtl_file) ? jmeter_jtl_file : '',
+  'JMeter Allure Sample Limit' => jmeter_sample_limit.to_s,
+  'JMeter Allure Samples Written' => jmeter_written_rows.to_s,
+  'JMeter JTL Rows Seen' => jmeter_total_rows.to_s
 }
 File.write(File.join(allure_dir, 'environment.properties'), environment.map { |k, v| "#{k}=#{v}" }.join("\n"))
 
@@ -149,6 +163,7 @@ if File.exist?(jmeter_stats_file)
   stats = JSON.parse(File.read(jmeter_stats_file))
   total = stats['Total'] || stats.values.first
   if total
+    jmeter_total_rows = total['sampleCount'].to_i if jmeter_total_rows < total['sampleCount'].to_i
     summary = [
       "# JMeter Summary",
       "",

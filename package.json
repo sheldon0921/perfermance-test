@@ -13,13 +13,24 @@
     "postman:baidu": "bash utils/CollectionApi.sh PostmanScene/BaiduDemo/BaiduHome.json",
     "jmeter": "bash utils/runJmeter.sh",
     "jmeter:report": "bash utils/generateJmeterReport.sh",
+    "report:index": "bash utils/buildReportIndex.sh",
     "allure:results": "bash utils/generateAllureResults.sh",
     "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh"
   },
   "dependencies": {
-    "newman": "^5.2.2"
+    "newman": "^6.2.2"
   },
   "devDependencies": {
-    "allure-commandline": "^2.42.1"
+    "allure-commandline": "^2.43.0"
+  },
+  "overrides": {
+    "flatted": "^3.4.2",
+    "handlebars": "^4.7.9",
+    "jose": "^4.15.9",
+    "lodash": "^4.18.1",
+    "node-forge": "^1.4.0",
+    "qs": "^6.15.3",
+    "underscore": "^1.13.8",
+    "uuid": "^11.1.0"
   }
 }

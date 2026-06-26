@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        PATH = "/opt/homebrew/opt/node@22/bin:/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/bin:${env.PATH}"
+    }
     options {
         buildDiscarder(logRotator(numToKeepStr: '25'))
         timestamps()
@@ -21,9 +24,13 @@ pipeline {
             defaultValue: 'script/simulate/baidu_home.jmx',
             description: 'JMeter jmx 脚本路径；TEST_TYPE=jmeter 时生效'
         )
-        string(name: 'ThreadsCount', defaultValue: '10', description: 'JMeter 线程数')
-        string(name: 'RampUp', defaultValue: '10', description: 'JMeter RampUp 秒数')
-        string(name: 'time', defaultValue: '60', description: 'JMeter 持续时间，单位秒')
+        string(name: 'ThreadsCount', defaultValue: '1', description: 'JMeter 线程数')
+        string(name: 'RampUp', defaultValue: '1', description: 'JMeter RampUp 秒数')
+        string(name: 'time', defaultValue: '10', description: 'JMeter 持续时间，单位秒')
+        string(name: 'ThinkTimeMs', defaultValue: '1000', description: 'JMeter 请求间隔，单位毫秒')
+        string(name: 'TargetDomain', defaultValue: 'www.baidu.com', description: 'JMeter 目标域名')
+        string(name: 'TargetProtocol', defaultValue: 'https', description: 'JMeter 协议')
+        string(name: 'TargetPath', defaultValue: '/', description: 'JMeter 请求路径')
     }
     stages {
         stage('Prepare Reports') {
@@ -33,7 +40,7 @@ pipeline {
         }
         stage('Install Node Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'
             }
         }
         stage('Run Newman') {
@@ -49,7 +56,7 @@ pipeline {
                 expression { params.TEST_TYPE == 'jmeter' }
             }
             steps {
-                sh 'env ThreadsCount="${ThreadsCount}" RampUp="${RampUp}" time="${time}" bash utils/runJmeter.sh "${CASE_FILE}"'
+                sh 'env ThreadsCount="${ThreadsCount}" RampUp="${RampUp}" time="${time}" ThinkTimeMs="${ThinkTimeMs}" TargetDomain="${TargetDomain}" TargetProtocol="${TargetProtocol}" TargetPath="${TargetPath}" bash utils/runJmeter.sh "${CASE_FILE}"'
             }
         }
     }
@@ -57,34 +64,13 @@ pipeline {
         always {
             sh 'TEST_TYPE="${TEST_TYPE}" bash utils/generateAllureResults.sh'
             sh 'bash utils/generateAllureReport.sh'
+            sh 'bash utils/buildReportIndex.sh'
             script {
                 if (fileExists('report/result')) {
                     junit allowEmptyResults: true, testResults: 'report/result/*.xml'
                 }
             }
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jtlResult.jtl,report/report/**,report/allure-results/**,report/allure-report/**'
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'report/allure-report',
-                reportFiles: 'index.html',
-                reportName: 'Allure Report',
-                reportTitles: 'Allure Report'
-            ])
-            script {
-                if (fileExists('report/report/index.html')) {
-                    publishHTML([
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'report/report',
-                        reportFiles: 'index.html',
-                        reportName: 'JMeter Dashboard',
-                        reportTitles: 'JMeter Dashboard'
-                    ])
-                }
-            }
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jtlResult.jtl,report/report/**,report/jenkins/**,report/allure-results/**,report/allure-report/**'
         }
     }
 }

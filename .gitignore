@@ -10,5 +10,6 @@ report/jenkins/
 report/allure-results/
 report/allure-report/
 report/*.jtl
+report/*.html
 npm-debug.log*
 .env
