@@ -15,7 +15,8 @@
     "jmeter:report": "bash utils/generateJmeterReport.sh",
     "report:index": "bash utils/buildReportIndex.sh",
     "allure:results": "bash utils/generateAllureResults.sh",
-    "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh"
+    "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh",
+    "verify:local": "bash utils/verifyLocal.sh"
   },
   "dependencies": {
     "newman": "^6.2.2"
