@@ -217,8 +217,9 @@ Allure 和 JMeter Dashboard 都是带 CSS/JavaScript 的 HTML 报告。通过 Je
 
 `JenkinsfileForNewman`：
 
-- 只执行 Newman。
-- 适合只需要 collection JUnit 报告的简化任务。
+- 只执行 Newman，默认使用 `PostmanScene/BaiduDemo/BaiduHome.json`。
+- 适合只需要接口测试的简化任务。
+- 会生成并归档 JUnit XML、Newman HTML、Allure 报告和轻量报告索引。
 
 `Jenkinsfile`：
 

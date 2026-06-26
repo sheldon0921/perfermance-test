@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        PATH = "/opt/homebrew/opt/node@22/bin:/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/bin:${env.PATH}"
+    }
     options {
         buildDiscarder(logRotator(numToKeepStr: '25'))
         timestamps()
@@ -8,8 +11,8 @@ pipeline {
     parameters {
         string(
             name: 'COLLECTION_PATH',
-            defaultValue: 'PostmanScene',
-            description: 'Postman collection file or directory'
+            defaultValue: 'PostmanScene/BaiduDemo/BaiduHome.json',
+            description: 'Postman collection 文件或目录；默认使用可本地稳定通过的 Baidu Demo'
         )
     }
     stages {
@@ -20,15 +23,17 @@ pipeline {
         }
         stage('Run Newman') {
             steps {
-                sh 'rm -rf report/result && mkdir -p report/result'
                 sh 'bash utils/CollectionApi.sh "${COLLECTION_PATH}"'
             }
         }
     }
     post {
         always {
+            sh 'TEST_TYPE=postman bash utils/generateAllureResults.sh'
+            sh 'bash utils/generateAllureReport.sh'
+            sh 'TEST_TYPE=postman bash utils/buildReportIndex.sh'
             junit allowEmptyResults: true, testResults: 'report/result/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jenkins/**,report/allure-results/**,report/allure-report/**'
         }
     }
 }
