@@ -2,6 +2,10 @@
 set -euo pipefail
 export PATH="/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 ALLURE_BIN="${ALLURE_BIN:-node_modules/.bin/allure}"
 ALLURE_RESULTS_DIR="${ALLURE_RESULTS_DIR:-report/allure-results}"
 ALLURE_REPORT_DIR="${ALLURE_REPORT_DIR:-report/allure-report}"
@@ -16,11 +20,8 @@ if [ ! -d "$ALLURE_RESULTS_DIR" ]; then
   exit 1
 fi
 
-if [ -z "$ALLURE_REPORT_DIR" ] || [ "$ALLURE_REPORT_DIR" = "/" ] || [ "$ALLURE_REPORT_DIR" = "." ]; then
-  echo "Refusing to use unsafe Allure report directory: $ALLURE_REPORT_DIR"
-  exit 1
-fi
+require_safe_clean_path "$ALLURE_REPORT_DIR" "Allure report directory"
 
-rm -rf "$ALLURE_REPORT_DIR"
+safe_remove_path "$ALLURE_REPORT_DIR" "Allure report directory"
 "$ALLURE_BIN" generate "$ALLURE_RESULTS_DIR" --clean -o "$ALLURE_REPORT_DIR"
 echo "Allure report: $ALLURE_REPORT_DIR/index.html"

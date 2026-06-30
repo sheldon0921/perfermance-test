@@ -35,7 +35,7 @@ pipeline {
     stages {
         stage('Prepare Reports') {
             steps {
-                sh 'rm -rf report/result report/newman report/report report/jenkins report/allure-results report/allure-report report/jtlResult.jtl'
+                sh 'bash utils/cleanReports.sh local'
             }
         }
         stage('Install Node Dependencies') {

@@ -3,6 +3,10 @@ set -euo pipefail
 export LANG="${LANG:-en_US.UTF-8}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 ALLURE_RESULTS_DIR="${ALLURE_RESULTS_DIR:-report/allure-results}"
 NEWMAN_XML_DIR="${RESULT_DIR:-report/result}"
 JMETER_JTL_FILE="${JTL_FILE:-report/jtlResult.jtl}"
@@ -10,18 +14,15 @@ JMETER_STATS_FILE="${REPORT_DIR:-report/report}/statistics.json"
 TEST_TYPE="${TEST_TYPE:-unknown}"
 JMETER_ALLURE_SAMPLE_LIMIT="${JMETER_ALLURE_SAMPLE_LIMIT:-1000}"
 
-if [ -z "$ALLURE_RESULTS_DIR" ] || [ "$ALLURE_RESULTS_DIR" = "/" ] || [ "$ALLURE_RESULTS_DIR" = "." ]; then
-  echo "Refusing to use unsafe Allure results directory: $ALLURE_RESULTS_DIR"
-  exit 1
-fi
+require_valid_test_type "$TEST_TYPE"
+require_safe_clean_path "$ALLURE_RESULTS_DIR" "Allure results directory"
 
 if ! [[ "$JMETER_ALLURE_SAMPLE_LIMIT" =~ ^[0-9]+$ ]]; then
   echo "JMETER_ALLURE_SAMPLE_LIMIT must be an integer >= 0, got: $JMETER_ALLURE_SAMPLE_LIMIT"
   exit 1
 fi
 
-rm -rf "$ALLURE_RESULTS_DIR"
-mkdir -p "$ALLURE_RESULTS_DIR"
+safe_recreate_dir "$ALLURE_RESULTS_DIR" "Allure results directory"
 
 ruby -Ku - "$ALLURE_RESULTS_DIR" "$NEWMAN_XML_DIR" "$JMETER_JTL_FILE" "$JMETER_STATS_FILE" "$TEST_TYPE" "$JMETER_ALLURE_SAMPLE_LIMIT" <<'RUBY'
 # encoding: UTF-8

@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 JMETER_BIN="${JMETER_BIN:-jmeter}"
 JTL_FILE="${JTL_FILE:-report/jtlResult.jtl}"
 REPORT_DIR="${REPORT_DIR:-report/report}"
 
-is_safe_path() {
-  local path="$1"
-  [ -n "$path" ] && [ "$path" != "/" ] && [ "$path" != "." ]
-}
-
 clean_report_dir() {
-  if ! is_safe_path "$REPORT_DIR"; then
-    echo "Refusing to clean unsafe report directory: $REPORT_DIR"
-    exit 1
-  fi
-
   echo "Cleaning JMeter HTML report files: $REPORT_DIR"
-  rm -rf "$REPORT_DIR"
-  mkdir -p "$REPORT_DIR"
+  safe_recreate_dir "$REPORT_DIR" "report directory"
 }
 
 if ! command -v "$JMETER_BIN" >/dev/null 2>&1 && [ ! -x "$JMETER_BIN" ]; then

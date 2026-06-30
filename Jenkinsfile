@@ -47,7 +47,7 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-                sh 'rm -rf report/report report/jenkins report/jtlResult.jtl && mkdir -p report/report && touch report/jtlResult.jtl'
+                sh 'bash utils/cleanReports.sh jmeter'
                 script {
                     def serverCount = params.Exec_Server?.trim() ? params.Exec_Server.split(',').length : 1
                     currentBuild.displayName = "#${BUILD_ID}-${params.description}"
@@ -95,8 +95,7 @@ pipeline {
             steps {
                 script {
                     def jmeterBin = fileExists('utils/jmeter/bin/jmeter') ? 'utils/jmeter/bin/jmeter' : 'jmeter'
-                    sh 'rm -rf report/report && mkdir -p report/report'
-                    sh "\"${jmeterBin}\" -g report/jtlResult.jtl -e -o report/report"
+                    sh "JMETER_BIN=\"${jmeterBin}\" bash utils/generateJmeterReport.sh"
                     sh 'TEST_TYPE=jmeter bash utils/buildReportIndex.sh'
                 }
             }

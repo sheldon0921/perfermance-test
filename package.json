@@ -19,8 +19,11 @@
     "report:index": "TEST_TYPE=${TEST_TYPE:-local} bash utils/buildReportIndex.sh",
     "report:index:postman": "TEST_TYPE=postman npm run report:index",
     "report:index:jmeter": "TEST_TYPE=jmeter npm run report:index",
+    "clean:reports": "bash utils/cleanReports.sh local",
     "allure:results": "bash utils/generateAllureResults.sh",
     "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh",
+    "verify:static": "bash utils/verifyStatic.sh",
+    "verify:safety": "bash utils/verifySafety.sh",
     "verify:local": "bash utils/verifyLocal.sh"
   },
   "dependencies": {

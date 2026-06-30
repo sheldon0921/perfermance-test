@@ -3,6 +3,10 @@ set -euo pipefail
 export LANG="${LANG:-en_US.UTF-8}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 REPORT_HOME="${REPORT_HOME:-report/jenkins}"
 NEWMAN_XML_DIR="${RESULT_DIR:-report/result}"
 NEWMAN_HTML_DIR="${HTML_DIR:-report/newman}"
@@ -12,20 +16,14 @@ ALLURE_REPORT_DIR="${ALLURE_REPORT_DIR:-report/allure-report}"
 TEST_TYPE="${TEST_TYPE:-unknown}"
 INDEX_FILE="$REPORT_HOME/index.html"
 
-if [ -z "$REPORT_HOME" ] || [ "$REPORT_HOME" = "/" ] || [ "$REPORT_HOME" = "." ]; then
-  echo "Refusing to use unsafe report home: $REPORT_HOME"
-  exit 1
-fi
+require_valid_test_type "$TEST_TYPE"
+require_safe_clean_path "$REPORT_HOME" "report home"
 
 if [ "$TEST_TYPE" = "postman" ] || [ "$TEST_TYPE" = "local" ] || [ "$TEST_TYPE" = "unknown" ] || [ -z "$TEST_TYPE" ]; then
-  if [ -z "$NEWMAN_HTML_DIR" ] || [ "$NEWMAN_HTML_DIR" = "/" ] || [ "$NEWMAN_HTML_DIR" = "." ]; then
-    echo "Refusing to use unsafe Newman HTML directory: $NEWMAN_HTML_DIR"
-    exit 1
-  fi
+  require_safe_clean_path "$NEWMAN_HTML_DIR" "Newman HTML directory"
 fi
 
-rm -rf "$REPORT_HOME"
-mkdir -p "$REPORT_HOME"
+safe_recreate_dir "$REPORT_HOME" "report home"
 
 ruby -Ku - "$INDEX_FILE" "$NEWMAN_XML_DIR" "$NEWMAN_HTML_DIR" "$JMETER_REPORT_DIR" "$JMETER_JTL_FILE" "$ALLURE_REPORT_DIR" "$TEST_TYPE" "${BUILD_NUMBER:-local}" "${JOB_NAME:-local}" <<'RUBY'
 # encoding: UTF-8

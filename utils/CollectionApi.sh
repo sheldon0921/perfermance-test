@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 TARGET_PATH="${1:-PostmanScene}"
 RESULT_DIR="${RESULT_DIR:-report/result}"
 HTML_DIR="${HTML_DIR:-report/newman}"
 NEWMAN_BIN="${NEWMAN_BIN:-node_modules/.bin/newman}"
 COLLECTION_COUNT=0
-
-is_safe_path() {
-  local path="$1"
-  [ -n "$path" ] && [ "$path" != "/" ] && [ "$path" != "." ]
-}
 
 validate_collection_file() {
   local collection="$1"
@@ -30,23 +29,11 @@ validate_collection_file() {
 }
 
 clean_result_dir() {
-  if ! is_safe_path "$RESULT_DIR"; then
-    echo "Refusing to clean unsafe result directory: $RESULT_DIR"
-    exit 1
-  fi
-
   echo "Cleaning Newman report files: $RESULT_DIR"
-  rm -rf "$RESULT_DIR"
-  mkdir -p "$RESULT_DIR"
-
-  if ! is_safe_path "$HTML_DIR"; then
-    echo "Refusing to clean unsafe HTML directory: $HTML_DIR"
-    exit 1
-  fi
+  safe_recreate_dir "$RESULT_DIR" "result directory"
 
   echo "Cleaning Newman HTML files: $HTML_DIR"
-  rm -rf "$HTML_DIR"
-  mkdir -p "$HTML_DIR"
+  safe_recreate_dir "$HTML_DIR" "HTML directory"
 }
 
 if [ ! -x "$NEWMAN_BIN" ]; then

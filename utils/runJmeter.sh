@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/common.sh
+source "$SCRIPT_DIR/common.sh"
+
 JMETER_BIN="${JMETER_BIN:-jmeter}"
 CASE_FILE="${1:-script/simulate/baidu_home.jmx}"
 JTL_FILE="${JTL_FILE:-report/jtlResult.jtl}"
@@ -12,11 +16,6 @@ TARGET_DOMAIN="${TargetDomain:-www.baidu.com}"
 TARGET_PROTOCOL="${TargetProtocol:-https}"
 TARGET_PATH="${TargetPath:-/}"
 THINK_TIME_MS="${ThinkTimeMs:-1000}"
-
-is_safe_path() {
-  local path="$1"
-  [ -n "$path" ] && [ "$path" != "/" ] && [ "$path" != "." ]
-}
 
 validate_integer_at_least() {
   local name="$1"
@@ -53,23 +52,11 @@ validate_case_file() {
 }
 
 clean_report_dir() {
-  if ! is_safe_path "$REPORT_DIR"; then
-    echo "Refusing to clean unsafe report directory: $REPORT_DIR"
-    exit 1
-  fi
-
-  rm -rf "$REPORT_DIR"
-  mkdir -p "$REPORT_DIR"
+  safe_recreate_dir "$REPORT_DIR" "report directory"
 }
 
 clean_jtl_file() {
-  if ! is_safe_path "$JTL_FILE"; then
-    echo "Refusing to clean unsafe JTL file: $JTL_FILE"
-    exit 1
-  fi
-
-  rm -f "$JTL_FILE"
-  mkdir -p "$(dirname "$JTL_FILE")"
+  safe_prepare_file "$JTL_FILE" "JTL file"
 }
 
 validate_jmeter
