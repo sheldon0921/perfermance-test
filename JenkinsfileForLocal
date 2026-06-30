@@ -35,7 +35,7 @@ pipeline {
     stages {
         stage('Prepare Reports') {
             steps {
-                sh 'rm -rf report/result report/newman report/report report/allure-results report/allure-report report/jtlResult.jtl'
+                sh 'rm -rf report/result report/newman report/report report/jenkins report/allure-results report/allure-report report/jtlResult.jtl'
             }
         }
         stage('Install Node Dependencies') {
@@ -64,7 +64,7 @@ pipeline {
         always {
             sh 'TEST_TYPE="${TEST_TYPE}" bash utils/generateAllureResults.sh'
             sh 'bash utils/generateAllureReport.sh'
-            sh 'bash utils/buildReportIndex.sh'
+            sh 'TEST_TYPE="${TEST_TYPE}" bash utils/buildReportIndex.sh'
             script {
                 if (fileExists('report/result')) {
                     junit allowEmptyResults: true, testResults: 'report/result/*.xml'

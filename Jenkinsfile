@@ -47,7 +47,7 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-                sh 'rm -rf report/report report/jtlResult.jtl && mkdir -p report/report && touch report/jtlResult.jtl'
+                sh 'rm -rf report/report report/jenkins report/jtlResult.jtl && mkdir -p report/report && touch report/jtlResult.jtl'
                 script {
                     def serverCount = params.Exec_Server?.trim() ? params.Exec_Server.split(',').length : 1
                     currentBuild.displayName = "#${BUILD_ID}-${params.description}"
@@ -97,13 +97,14 @@ pipeline {
                     def jmeterBin = fileExists('utils/jmeter/bin/jmeter') ? 'utils/jmeter/bin/jmeter' : 'jmeter'
                     sh 'rm -rf report/report && mkdir -p report/report'
                     sh "\"${jmeterBin}\" -g report/jtlResult.jtl -e -o report/report"
+                    sh 'TEST_TYPE=jmeter bash utils/buildReportIndex.sh'
                 }
             }
         }
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/jtlResult.jtl,report/report/**'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'report/jtlResult.jtl,report/report/**,report/jenkins/**'
             script {
                 if (fileExists('utils/stopSlave.sh')) {
                     sh 'sh utils/stopSlave.sh'

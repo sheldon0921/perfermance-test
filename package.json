@@ -13,7 +13,12 @@
     "postman:baidu": "bash utils/CollectionApi.sh PostmanScene/BaiduDemo/BaiduHome.json",
     "jmeter": "bash utils/runJmeter.sh",
     "jmeter:report": "bash utils/generateJmeterReport.sh",
-    "report:index": "bash utils/buildReportIndex.sh",
+    "report": "TEST_TYPE=${TEST_TYPE:-local} bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh && TEST_TYPE=${TEST_TYPE:-local} bash utils/buildReportIndex.sh",
+    "report:postman": "TEST_TYPE=postman npm run report",
+    "report:jmeter": "TEST_TYPE=jmeter npm run report",
+    "report:index": "TEST_TYPE=${TEST_TYPE:-local} bash utils/buildReportIndex.sh",
+    "report:index:postman": "TEST_TYPE=postman npm run report:index",
+    "report:index:jmeter": "TEST_TYPE=jmeter npm run report:index",
     "allure:results": "bash utils/generateAllureResults.sh",
     "allure:report": "bash utils/generateAllureResults.sh && bash utils/generateAllureReport.sh",
     "verify:local": "bash utils/verifyLocal.sh"

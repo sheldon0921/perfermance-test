@@ -16,6 +16,11 @@ pipeline {
         )
     }
     stages {
+        stage('Prepare Reports') {
+            steps {
+                sh 'rm -rf report/result report/newman report/jenkins report/allure-results report/allure-report'
+            }
+        }
         stage('Install') {
             steps {
                 sh 'npm ci'
