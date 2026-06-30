@@ -38,6 +38,22 @@ pipeline {
             sh 'bash utils/generateAllureReport.sh'
             sh 'TEST_TYPE=postman bash utils/buildReportIndex.sh'
             junit allowEmptyResults: true, testResults: 'report/result/*.xml'
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/jenkins',
+                reportFiles: 'index.html',
+                reportName: 'Report Index'
+            ]
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/allure-report',
+                reportFiles: 'index.html',
+                reportName: 'Allure Report'
+            ]
             archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jenkins/**,report/allure-results/**,report/allure-report/**'
         }
     }

@@ -104,6 +104,22 @@ pipeline {
     post {
         always {
             archiveArtifacts allowEmptyArchive: true, artifacts: 'report/jtlResult.jtl,report/report/**,report/jenkins/**'
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/jenkins',
+                reportFiles: 'index.html',
+                reportName: 'Report Index'
+            ]
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/report',
+                reportFiles: 'index.html',
+                reportName: 'JMeter Dashboard'
+            ]
             script {
                 if (fileExists('utils/stopSlave.sh')) {
                     sh 'sh utils/stopSlave.sh'

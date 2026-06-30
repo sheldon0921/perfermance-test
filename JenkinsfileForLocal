@@ -70,6 +70,30 @@ pipeline {
                     junit allowEmptyResults: true, testResults: 'report/result/*.xml'
                 }
             }
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/jenkins',
+                reportFiles: 'index.html',
+                reportName: 'Report Index'
+            ]
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/allure-report',
+                reportFiles: 'index.html',
+                reportName: 'Allure Report'
+            ]
+            publishHTML target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'report/report',
+                reportFiles: 'index.html',
+                reportName: 'JMeter Dashboard'
+            ]
             archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jtlResult.jtl,report/report/**,report/jenkins/**,report/allure-results/**,report/allure-report/**'
         }
     }
