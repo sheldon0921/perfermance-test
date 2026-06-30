@@ -1,5 +1,14 @@
 #!/usr/bin/groovy
 
+def publishHtmlReport(Map target) {
+    try {
+        publishHTML target: target
+    } catch (err) {
+        echo "HTML Publisher report skipped: ${target.reportName}. Install the HTML Publisher plugin to show this link in Jenkins."
+        echo "Publish error: ${err.getMessage()}"
+    }
+}
+
 pipeline {
     agent any
     options {
@@ -104,23 +113,23 @@ pipeline {
     post {
         always {
             archiveArtifacts allowEmptyArchive: true, artifacts: 'report/jtlResult.jtl,report/report/**,report/jenkins/**'
-            publishHTML target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'report/jenkins',
-                reportFiles: 'index.html',
-                reportName: 'Report Index'
-            ]
-            publishHTML target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'report/report',
-                reportFiles: 'index.html',
-                reportName: 'JMeter Dashboard'
-            ]
             script {
+                publishHtmlReport([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'report/jenkins',
+                    reportFiles: 'index.html',
+                    reportName: 'Report Index'
+                ])
+                publishHtmlReport([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'report/report',
+                    reportFiles: 'index.html',
+                    reportName: 'JMeter Dashboard'
+                ])
                 if (fileExists('utils/stopSlave.sh')) {
                     sh 'sh utils/stopSlave.sh'
                 }

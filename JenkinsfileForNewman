@@ -1,3 +1,12 @@
+def publishHtmlReport(Map target) {
+    try {
+        publishHTML target: target
+    } catch (err) {
+        echo "HTML Publisher report skipped: ${target.reportName}. Install the HTML Publisher plugin to show this link in Jenkins."
+        echo "Publish error: ${err.getMessage()}"
+    }
+}
+
 pipeline {
     agent any
     environment {
@@ -38,22 +47,24 @@ pipeline {
             sh 'bash utils/generateAllureReport.sh'
             sh 'TEST_TYPE=postman bash utils/buildReportIndex.sh'
             junit allowEmptyResults: true, testResults: 'report/result/*.xml'
-            publishHTML target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'report/jenkins',
-                reportFiles: 'index.html',
-                reportName: 'Report Index'
-            ]
-            publishHTML target: [
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'report/allure-report',
-                reportFiles: 'index.html',
-                reportName: 'Allure Report'
-            ]
+            script {
+                publishHtmlReport([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'report/jenkins',
+                    reportFiles: 'index.html',
+                    reportName: 'Report Index'
+                ])
+                publishHtmlReport([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'report/allure-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Allure Report'
+                ])
+            }
             archiveArtifacts allowEmptyArchive: true, artifacts: 'report/result/*.xml,report/newman/**,report/jenkins/**,report/allure-results/**,report/allure-report/**'
         }
     }
